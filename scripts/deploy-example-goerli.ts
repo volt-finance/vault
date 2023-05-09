@@ -37,8 +37,8 @@ async function main() {
     deployer.address, // feeRecipient
     weth,
     18,
-    'MyVault share',
-    'MVs',
+    'Volt Finance share',
+    'Volt',
     [action.address]
   )
 

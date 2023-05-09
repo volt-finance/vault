@@ -25,13 +25,8 @@ const etherscanKey = process.env.ETHERSCAN_KEY
 
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
-
 export default {
   networks: {
-    // localhost: {
-    //   url: 'http://127.0.0.1:8545',
-    //   accounts: ['0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e'],
-    // },
     hardhat: {
       allowUnlimitedContractSize: true,
     },
@@ -47,18 +42,18 @@ export default {
     },
     goerli: {
       url: `https://goerli.infura.io/v3/${infuraKey}`,
-      accounts:['19d1127ce175c7374cd37fd4f41bfbf2308a09802a1cc4619f0800181b74c35f'],
       gas: 12000000,
-      // accounts: {
-      //   mnemonic: mnemonic,
-      // },
+      accounts: {
+        mnemonic: mnemonic,
+      },
     },
-    // ropsten: {
-    //   url: `https://ropsten.infura.io/v3/${infuraKey}`,
-    //   accounts: {
-    //     mnemonic: mnemonic,
-    //   },
-    // },
+    sepolia: {
+      url: `https://sepolia.infura.io/v3/${infuraKey}`,
+      gas: 12000000,
+      accounts: {
+        mnemonic: mnemonic,
+      },
+    },
   },
   solidity: '0.7.6',
   settings: {

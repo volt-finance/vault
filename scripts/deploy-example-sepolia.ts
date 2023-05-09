@@ -3,13 +3,14 @@ import { run, ethers } from "hardhat";
 async function main() {
   await run("compile");
 
-  // assets on kovan
-  const weth = '0xd0a1e359811322d97991e03f863a0c30c2cf029c' // weth
-  const swap = '0x79fb4604f2D7bD558Cda0DFADb7d61D98b28CA9f'
-  const controller = '0xdee7d0f8ccc0f7ac7e45af454e5e7ec1552e8e4e'
+  // assets on goerli
+  const weth = '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6' // weth
+  const swap = '0x18C90516a38Dd7B779A8f6C19FA698F0F4Efc7FC'
+  const controller = '0x45fD0117d2eE5d70840880cCDcD3e03Dc328aef1'
   const vaultType = 0
 
   const [deployer,] = await ethers.getSigners();
+  console.log('deployer:', ethers.utils.formatEther(await deployer.getBalance()));
 
   // Deploy the PerpVault contract first
   const OpynPerpVault = await ethers.getContractFactory('OpynPerpVault');
@@ -19,8 +20,8 @@ async function main() {
 
   console.log(`🍩 Vault deployed at ${vault.address}`)
 
-  const ShortAction = await ethers.getContractFactory('MyAction');
-  const action = await ShortAction.deploy(
+  const MyAction = await ethers.getContractFactory('MyAction');
+  const action = await MyAction.deploy(
     vault.address,
     weth, 
     swap,
@@ -36,8 +37,8 @@ async function main() {
     deployer.address, // feeRecipient
     weth,
     18,
-    'MyVault share',
-    'MVs',
+    'Volt Finance share',
+    'Volt',
     [action.address]
   )
 
