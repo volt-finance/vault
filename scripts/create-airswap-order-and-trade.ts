@@ -8,9 +8,9 @@ async function main() {
   const otokenToBuy = '' // sender token
   const actionAddress = '' // my action 
 
-  // kovan weth and airswap address
-  const wethAddress = '0xd0a1e359811322d97991e03f863a0c30c2cf029c'
-  const swap = '0x79fb4604f2D7bD558Cda0DFADb7d61D98b28CA9f'
+  // goerli weth and airswap address
+  const wethAddress = '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6'
+  const swap = '0x18C90516a38Dd7B779A8f6C19FA698F0F4Efc7FC'
   
   const [owner, signer] = await ethers.getSigners();
 

@@ -16,6 +16,7 @@
     "lint:tests:fix": "prettier --write 'test/**/*.ts'",
     "lint": "npm run lint:contract && npm run lint:tests",
     "deploy": "hardhat run scripts/deploy.js",
+    "goerli:deploy": "hardhat run scripts/deploy-example-goerli.ts --network goerli",
     "postdeploy": "hardhat run scripts/publish.js",
     "watch": "node scripts/watch.js",
     "accounts": "hardhat accounts",
