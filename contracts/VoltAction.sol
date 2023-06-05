@@ -23,7 +23,7 @@ import {IOToken} from "./interfaces/IOToken.sol";
  * This is an Short Action template that inherit lots of util functions to "Short" an option.
  * You can remove the function you don't need.
  */
-contract MyAction is IAction, OwnableUpgradeable, AirswapUtils, RollOverBase, GammaUtils {
+contract VoltAction is IAction, OwnableUpgradeable, AirswapUtils, RollOverBase, GammaUtils {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
 

@@ -13,9 +13,9 @@ dotenv.config()
 
 const mnemonic = fs.existsSync('.secret')
   ? fs
-      .readFileSync('.secret')
-      .toString()
-      .trim()
+    .readFileSync('.secret')
+    .toString()
+    .trim()
   : "test test test test test test test test test test test junk"
 // const mnemonic = 'test test test test test test test test test test test junk'
 
@@ -70,7 +70,7 @@ export default {
     alphaSort: true,
   },
   etherscan: {
-    apiKey: etherscanKey
+    apiKey: 'ECDJ4KYUIXNZVZIB7F9KE2E691NCMYV4QA'
   },
   mocha: {
     timeout: 150000

@@ -9,7 +9,7 @@ contract RollOverBase is OwnableUpgradeable {
   address public otoken;
   address public nextOToken;
 
-  uint256 public constant MIN_COMMIT_PERIOD = 18 hours;
+  uint256 public constant MIN_COMMIT_PERIOD = 0 hours;
   uint256 public commitStateStart;
 
   enum ActionState {

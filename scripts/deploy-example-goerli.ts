@@ -17,20 +17,18 @@ async function main() {
   const vault = await OpynPerpVault.deploy();
 
   await vault.deployed();
-
   console.log(`🍩 Vault deployed at ${vault.address}`)
 
-  const MyAction = await ethers.getContractFactory('MyAction');
-  const action = await MyAction.deploy(
+  const VoltAction = await ethers.getContractFactory('VoltAction');
+  const action = await VoltAction.deploy(
     vault.address,
-    weth, 
+    weth,
     swap,
     controller,
     vaultType
   );
 
   console.log(`🍣 MyAction deployed at ${action.address}`)
-
   await vault.init(
     weth, // asset (weth)
     deployer.address, // owner.address,
@@ -52,32 +50,35 @@ async function main() {
   // verify contracts at the end, so we make sure etherscan is aware of their existence
   // verify the vault
   await run("verify:verify", {
-    address: vault.address, 
+    address: vault.address,
     network: ethers.provider.network
   })
+  console.log('verify the vault done')
 
   // verify the action
   await run("verify:verify", {
-    address: action.address, 
+    address: action.address,
     network: ethers.provider.network,
     constructorArguments: [
       vault.address,
-      weth, 
+      weth,
       swap,
       controller,
       vaultType
     ]
-  })  
+  })
+  console.log('verify the action done')
 
   // verify the proxy
   await run("verify:verify", {
-    address: proxy.address, 
+    address: proxy.address,
     network: ethers.provider.network,
     constructorArguments: [
       vault.address,
       weth
     ]
-  })  
+  })
+  console.log('verify the proxy done')
 }
 
 // We recommend this pattern to be able to use async/await everywhere
