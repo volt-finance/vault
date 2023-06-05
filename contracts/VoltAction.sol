@@ -8,6 +8,8 @@ import {RollOverBase} from "./utils/RollOverBase.sol";
 
 // use airswap to short / long
 import {AirswapUtils} from "./utils/AirswapUtils.sol";
+// use auction to short / long
+import {AuctionUtils} from "./utils/AuctionUtils.sol";
 
 import {SwapTypes} from "./libraries/SwapTypes.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -23,7 +25,7 @@ import {IOToken} from "./interfaces/IOToken.sol";
  * This is an Short Action template that inherit lots of util functions to "Short" an option.
  * You can remove the function you don't need.
  */
-contract VoltAction is IAction, OwnableUpgradeable, AirswapUtils, RollOverBase, GammaUtils {
+contract VoltAction is IAction, OwnableUpgradeable, AuctionUtils, AirswapUtils, RollOverBase, GammaUtils {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
 
@@ -53,6 +55,7 @@ contract VoltAction is IAction, OwnableUpgradeable, AirswapUtils, RollOverBase, 
     * @param _vault the address of the vault contract
     * @param _asset address of the ERC20 asset
     * @param _airswap address of airswap swap contract 
+    * @param _easyAuction address of gnosisSafe easy auction contract
     * @param _controller address of Opyn controller contract
     * @param _vaultType type 1 = partially collateralized, type 0 = fully collateralized 
     */
@@ -60,6 +63,7 @@ contract VoltAction is IAction, OwnableUpgradeable, AirswapUtils, RollOverBase, 
     address _vault,
     address _asset,
     address _airswap,
+    address _easyAuction,
     address _controller,
     uint256 _vaultType
   ) {
@@ -80,6 +84,7 @@ contract VoltAction is IAction, OwnableUpgradeable, AirswapUtils, RollOverBase, 
     IERC20(_asset).safeApprove(pool, uint256(-1));
 
     // init the contract used to short
+    _initAuction(_easyAuction);
     _initSwapContract(_airswap);
 
     _initRollOverBase(whitelist);
@@ -144,35 +149,35 @@ contract VoltAction is IAction, OwnableUpgradeable, AirswapUtils, RollOverBase, 
    * The auction cannot be stopped once it is in progress. Once the auction is over, if the minimum threshold
    * was met, someone needs to call `claimFromParticipantOrder` on the gnosis auction contract to transfer premiums. 
    */
-  // function mintAndStartAuction(
-  //   uint256 _collateralAmount,
-  //   uint256 _otokenToMint,
-  //   uint96 _otokenToSell,
-  //   uint256 _orderCancellationEndDate,
-  //   uint256 _auctionEndDate,
-  //   uint96 _minPremium,
-  //   uint256 _minimumBiddingAmountPerOrder,
-  //   uint256 _minFundingThreshold,
-  //   bool _isAtomicClosureAllowed
-  // ) external onlyOwner onlyActivated {
-  //   // mint otoken
-  //   if (_collateralAmount > 0 && _otokenToMint > 0) {
-  //     lockedAsset = lockedAsset.add(_collateralAmount);
-  //     _mintOTokens(asset, _collateralAmount, otoken, _otokenToMint);
-  //   }
+  function mintAndStartAuction(
+    uint256 _collateralAmount,
+    uint256 _otokenToMint,
+    uint96 _otokenToSell,
+    uint256 _orderCancellationEndDate,
+    uint256 _auctionEndDate,
+    uint96 _minPremium,
+    uint256 _minimumBiddingAmountPerOrder,
+    uint256 _minFundingThreshold,
+    bool _isAtomicClosureAllowed
+  ) external onlyOwner onlyActivated {
+    // mint otoken
+    if (_collateralAmount > 0 && _otokenToMint > 0) {
+      lockedAsset = lockedAsset.add(_collateralAmount);
+      _mintOTokens(asset, _collateralAmount, otoken, _otokenToMint);
+    }
 
-  //   _startAuction(
-  //     otoken,
-  //     asset,
-  //     _orderCancellationEndDate,
-  //     _auctionEndDate,
-  //     _otokenToSell,
-  //     _minPremium, // minBuyAmount
-  //     _minimumBiddingAmountPerOrder,
-  //     _minFundingThreshold,
-  //     _isAtomicClosureAllowed
-  //   );
-  // }
+    _startAuction(
+      otoken,
+      asset,
+      _orderCancellationEndDate,
+      _auctionEndDate,
+      _otokenToSell,
+      _minPremium, // minBuyAmount
+      _minimumBiddingAmountPerOrder,
+      _minFundingThreshold,
+      _isAtomicClosureAllowed
+    );
+  }
 
   /**
    * @notice mint options with "asset" and participate in an ongoing auction to sell it for asset.
@@ -180,23 +185,23 @@ contract VoltAction is IAction, OwnableUpgradeable, AirswapUtils, RollOverBase, 
    * @dev `_sellAmounts` will be transferred to the gnosis auction when the bid is placed. The actual 
    * premium may not be received till the auction ends. 
    */
-  // function mintAndBidInAuction(
-  //   uint256 _auctionId,
-  //   uint256 _collateralAmount,
-  //   uint256 _otokenToMint,
-  //   uint96[] memory _minBuyAmounts, // min amount of asset to get (premium)
-  //   uint96[] memory _sellAmounts, // amount of otoken selling
-  //   bytes32[] memory _prevSellOrders,
-  //   bytes calldata _allowListCallData
-  // ) external onlyOwner onlyActivated {
-  //   // mint token
-  //   if (_collateralAmount > 0 && _otokenToMint > 0) {
-  //     lockedAsset = lockedAsset.add(_collateralAmount);
-  //     _mintOTokens(asset, _collateralAmount, otoken, _otokenToMint);
-  //   }
+  function mintAndBidInAuction(
+    uint256 _auctionId,
+    uint256 _collateralAmount,
+    uint256 _otokenToMint,
+    uint96[] memory _minBuyAmounts, // min amount of asset to get (premium)
+    uint96[] memory _sellAmounts, // amount of otoken selling
+    bytes32[] memory _prevSellOrders,
+    bytes calldata _allowListCallData
+  ) external onlyOwner onlyActivated {
+    // mint token
+    if (_collateralAmount > 0 && _otokenToMint > 0) {
+      lockedAsset = lockedAsset.add(_collateralAmount);
+      _mintOTokens(asset, _collateralAmount, otoken, _otokenToMint);
+    }
 
-  //   _bidInAuction(asset, otoken, _auctionId, _minBuyAmounts, _sellAmounts, _prevSellOrders, _allowListCallData);
-  // }
+    _bidInAuction(asset, otoken, _auctionId, _minBuyAmounts, _sellAmounts, _prevSellOrders, _allowListCallData);
+  }
 
   /**
    * @notice mint options with "assets" and sell otokens in this action by filling an order on AirSwap.

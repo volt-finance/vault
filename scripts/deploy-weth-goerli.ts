@@ -7,6 +7,7 @@ async function main() {
   const weth = '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6' // weth
   const swap = '0x18C90516a38Dd7B779A8f6C19FA698F0F4Efc7FC'
   const controller = '0x45fD0117d2eE5d70840880cCDcD3e03Dc328aef1'
+  const easyAuction = '0x1fbab40c338e2e7243da945820ba680c92ef8281' 
   const vaultType = 0
 
   const [deployer,] = await ethers.getSigners();
@@ -24,6 +25,7 @@ async function main() {
     vault.address,
     weth,
     swap,
+    easyAuction,
     controller,
     vaultType
   );
@@ -55,7 +57,7 @@ async function main() {
   })
   console.log('verify the vault done')
 
-  // verify the action
+  // verify the action (run this function via CLI)
   await run("verify:verify", {
     address: action.address,
     network: ethers.provider.network,
@@ -70,15 +72,15 @@ async function main() {
   console.log('verify the action done')
 
   // verify the proxy
-  await run("verify:verify", {
-    address: proxy.address,
-    network: ethers.provider.network,
-    constructorArguments: [
-      vault.address,
-      weth
-    ]
-  })
-  console.log('verify the proxy done')
+    await run("verify:verify", {
+      address: proxy.address,
+      network: ethers.provider.network,
+      constructorArguments: [
+        vault.address,
+        weth
+      ]
+    })
+    console.log('verify the proxy done')
 }
 
 // We recommend this pattern to be able to use async/await everywhere

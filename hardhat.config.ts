@@ -28,7 +28,6 @@ const etherscanKey = process.env.ETHERSCAN_KEY
 export default {
   networks: {
     hardhat: {
-      allowUnlimitedContractSize: true,
     },
     localhost: {
       forking: {
@@ -37,12 +36,12 @@ export default {
       },
       gas: 12000000,
       blockGasLimit: 0x1fffffffffffff,
-      allowUnlimitedContractSize: true,
       accounts: ['0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e'],
     },
     goerli: {
       url: `https://goerli.infura.io/v3/${infuraKey}`,
-      gas: 12000000,
+      gas: 22000000,
+      allowUnlimitedContractSize: true,
       accounts: {
         mnemonic: mnemonic,
       },
