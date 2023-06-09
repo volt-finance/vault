@@ -1,12 +1,12 @@
 import { ethers } from "hardhat";
 import { BigNumber } from 'ethers'
-const { createOrder, signOrder } = require('@airswap/utils');
+import { createOrder, signOrder } from '@airswap/utils';
 
 async function main() {
 
   // edit these
-  const otokenToBuy = '' // sender token
-  const actionAddress = '' // my action 
+  const otokenToBuy = '0xc8C204a7dD92BAb2b83c7684567387f43d6c245E' // sender token
+  const actionAddress = '0x6E1b2127D026D3f22fCC2F5afc07D571A7691fb2' // my action 
 
   // goerli weth and airswap address
   const wethAddress = '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6'
@@ -48,7 +48,7 @@ async function main() {
   }
 
   // Owner the order!
-  const myAction = await ethers.getContractAt('MyAction', actionAddress);
+  const myAction = await ethers.getContractAt('VaultAction', actionAddress);
   const tx = await myAction.connect(owner).mintAndTradeAirSwapOTC(collateralAmount, senderAmount, signedOrder)
   console.log(`🍜 OTC order executed done. tx: ${tx.hash}`)
 }
