@@ -1,5 +1,5 @@
 // for goerli
-const vault = '0x553E84671bcB00a841a468E11B2A2D3cACd59bd1';
+const vault = '0x12453Cd2575bcb98F3FA1B2D5D1bdF69f12e32e4';
 const weth = '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6';
 const swap = '0x18C90516a38Dd7B779A8f6C19FA698F0F4Efc7FC';
 const controller = '0x45fD0117d2eE5d70840880cCDcD3e03Dc328aef1';

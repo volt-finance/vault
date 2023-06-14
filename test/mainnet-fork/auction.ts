@@ -11,6 +11,7 @@ import {
     IOToken,
 } from "../../typechain";
 
+const QUEUE_START = "0x0000000000000000000000000000000000000000000000000000000000000001";
 
 describe("Goerli: Gnosis Auction", function () {
     let shortAction: VoltAction;
@@ -22,6 +23,7 @@ describe("Goerli: Gnosis Auction", function () {
     let owner: SignerWithAddress;
     let depositor1: SignerWithAddress;
     let depositor2: SignerWithAddress;
+    let buyer1: SignerWithAddress;
 
     // core
     let vault: OpynPerpVault;
@@ -45,9 +47,9 @@ describe("Goerli: Gnosis Auction", function () {
     const usdcAddress = "0xd87ba7a50b2e7e660f678a895e4b72e7cb4ccd9c";
     const wethAddress = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
 
-    const vaultAddress = "0xd6e7014C8f28f8c55025b395058f8C62d35677c9";
-    const actionAddress = "0xd7A89B6a341c99E8Bdbad9E0fC8CBd14edB0E9e1";
-    const tokenAddress = "0x6E7Ca9e6fFd41ed2094dfD659176b2EbEe160a71";
+    const vaultAddress = "0x12453Cd2575bcb98F3FA1B2D5D1bdF69f12e32e4";
+    const actionAddress = "0x7a9DeB970a508167f0111C8A13C74Cf39CC1F6dA";
+    const tokenAddress = "0x3a9F08732ecB8A92f8db70d66085426941a9Bb21";
 
     this.beforeAll("Set accounts", async () => {
         provider = ethers.provider;
@@ -55,6 +57,7 @@ describe("Goerli: Gnosis Auction", function () {
         accounts = await ethers.getSigners();
         const [_owner, _depositor1, _depositor2] = accounts;
         owner = _owner;
+        buyer1 = _depositor1;
 
         depositor1 = _depositor1;
         depositor2 = _depositor2;
@@ -120,4 +123,29 @@ describe("Goerli: Gnosis Auction", function () {
         const easyAuctionOTokenAfter = await oToken.balanceOf(easyAuctionAddress);
         console.log("easyAuctionOTokenAfter:", easyAuctionOTokenAfter.toString());
     });
+
+    it.only("p1 participate in first auction", async () => {
+        // const auctionId = "103"; // expire date: Jun 16
+        const auctionId = "105"; // expire date: Jun 14
+        const buyer1BoughtAmount = 0.01 * 1e8; // 0.02 otoken
+        const buyer1Premium = utils.parseEther("1");
+
+        // await weth.connect(buyer1).deposit({ value: utils.parseEther("0.1") });
+        // await weth.connect(buyer1).approve(easyAuction.address, ethers.constants.MaxUint256);
+        const tx01 =await easyAuction.connect(buyer1).registerUser(buyer1.address);
+        const txResult01 = await tx01.wait();
+        console.log("txResult01:", txResult01);
+
+        const tx = await easyAuction.connect(buyer1).placeSellOrders(
+            auctionId,
+            [buyer1BoughtAmount], // 0.02 otoken
+            [buyer1Premium], // 1 eth
+            [QUEUE_START],
+            "0x00"
+        );
+
+        const txResult02 = await tx.wait();
+        console.log("txResult02:", txResult02);
+    });
+
 });

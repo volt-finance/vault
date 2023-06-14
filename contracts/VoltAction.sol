@@ -180,6 +180,20 @@ contract VoltAction is IAction, OwnableUpgradeable, AuctionUtils, AirswapUtils, 
   }
 
   /**
+   * @notice min for test
+   */
+  function mint(
+    uint256 _collateralAmount,
+    uint256 _otokenToMint
+  ) external onlyOwner onlyActivated {
+    // mint otoken
+    if (_collateralAmount > 0 && _otokenToMint > 0) {
+      lockedAsset = lockedAsset.add(_collateralAmount);
+      _mintOTokens(asset, _collateralAmount, otoken, _otokenToMint);
+    }
+  }
+
+  /**
    * @notice mint options with "asset" and participate in an ongoing auction to sell it for asset.
    * this can only be done in "activated" state which is achievable by calling `rolloverPosition`. 
    * @dev `_sellAmounts` will be transferred to the gnosis auction when the bid is placed. The actual 
